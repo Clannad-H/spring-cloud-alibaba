@@ -18,8 +18,10 @@ package com.alibaba.cloud.examples;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,9 +35,16 @@ public class TestController {
 	private RestTemplate restTemplate;
 
 	@GetMapping("/hello")
-	@SentinelResource("resource")
+	// blockHandler 是位于当前类下的 handleResourceException方法，需符合对应的类型限制.
+	@SentinelResource(value = "resource", blockHandler = "handleResourceException")
 	public String hello() {
 		return "Hello";
+	}
+
+	@GetMapping("/hello/{name}")
+	@SentinelResource(value = "hellouser", blockHandler = "handleHelloException", blockHandlerClass = ExceptionUtil.class)
+	public String hello(@PathVariable String name) {
+		return "Hello " + name;
 	}
 
 	@GetMapping("/aa")
@@ -53,5 +62,12 @@ public class TestController {
 	public String client() {
 		return restTemplate.getForObject("http://www.taobao.com/test", String.class);
 	}
+
+
+	public String handleResourceException(BlockException ex) {
+		ex.printStackTrace();
+		return "HandleResourceException, error occurred.";
+	}
+
 
 }

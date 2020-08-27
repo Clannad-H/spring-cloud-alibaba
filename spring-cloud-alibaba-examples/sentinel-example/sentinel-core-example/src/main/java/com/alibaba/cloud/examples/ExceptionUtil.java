@@ -32,9 +32,13 @@ public final class ExceptionUtil {
 	}
 
 	public static SentinelClientHttpResponse handleException(HttpRequest request,
-			byte[] body, ClientHttpRequestExecution execution, BlockException ex) {
+															 byte[] body, ClientHttpRequestExecution execution, BlockException ex) {
 		System.out.println("Oops: " + ex.getClass().getCanonicalName());
 		return new SentinelClientHttpResponse("custom block info");
+	}
+
+	public static String handleHelloException(String name, BlockException ex) {
+		return "HandleHelloException: " + name;
 	}
 
 }
